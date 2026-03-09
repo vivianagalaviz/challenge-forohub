@@ -1,8 +1,5 @@
 package com.viviana.forohub.controller;
-import com.viviana.forohub.domain.topico.DatosDetalleTopico;
-import com.viviana.forohub.domain.topico.DatosRegistroTopico;
-import com.viviana.forohub.domain.topico.Topico;
-import com.viviana.forohub.domain.topico.TopicoRepository;
+import com.viviana.forohub.domain.topico.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/topicos")
@@ -38,5 +36,14 @@ public class TopicoController {
         repository.save(topico);
 
         return ResponseEntity.ok(new DatosDetalleTopico(topico));
+    }
+    @GetMapping
+    public ResponseEntity<List<DatosListadoTopico>> listarTopicos() {
+        var lista = repository.findAll()
+                .stream()
+                .map(DatosListadoTopico::new)
+                .toList();
+
+        return ResponseEntity.ok(lista);
     }
 }
