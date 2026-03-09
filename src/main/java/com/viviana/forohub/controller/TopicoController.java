@@ -56,4 +56,28 @@ public class TopicoController {
 
         return ResponseEntity.notFound().build();
     }
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity actualizarTopico(@PathVariable Long id, @RequestBody @Valid DatosActualizarTopico datos) {
+        var topicoOptional = repository.findById(id);
+
+        if (topicoOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Topico topico = topicoOptional.get();
+
+        if ((!topico.getTitulo().equals(datos.titulo()) || !topico.getMensaje().equals(datos.mensaje()))
+                && repository.existsByTituloAndMensaje(datos.titulo(), datos.mensaje())) {
+            return ResponseEntity.badRequest().body("Ya existe un tópico con el mismo título y mensaje");
+        }
+
+        topico.setTitulo(datos.titulo());
+        topico.setMensaje(datos.mensaje());
+        topico.setAutor(datos.autor());
+        topico.setCurso(datos.curso());
+        topico.setStatus(datos.status());
+
+        return ResponseEntity.ok(new DatosDetalleTopico(topico));
+    }
 }
